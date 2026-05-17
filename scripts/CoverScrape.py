@@ -1,6 +1,12 @@
 import pandas as pd
 from bs4 import BeautifulSoup
 import requests
+import os
+from colorthief import ColorThief
+import matplotlib.pyplot as plt
+from ColorConversion import ColorConversion
+from ColorAnalysis import ColorAnalysis
+
 """This script scrapes the cover images and featured articles from Architectural Digest issues from 1922 through 2025."""
 
 base_url = "https://archive.architecturaldigest.com/issues/"
@@ -20,6 +26,13 @@ months = [
     ("11", "November"),
     ("12", "December"),
 ]
+
+Seasons = {
+    "Winter": ["December", "January", "February"],
+    "Spring": ["March", "April", "May"],
+    "Summer": ["June", "July", "August"],
+    "Fall": ["September", "October", "November"]
+}
 
 
 
@@ -82,6 +95,23 @@ def get_all_issues(start_year, end_year):
                 all_issues.append(issue_data)
     return all_issues
 
+def get_season(month):
+    """
+    Get the season for a given month.
+
+    Parameters:
+    month (str): The month to get the season for.
+
+    Returns:
+    str: The season for the given month.
+    """
+    for season, months_in_season in Seasons.items():
+        if month in months_in_season:
+            return season
+    return None
+
+
+
 def main(csv_name="./data/architectural_digest_covers.csv"):
     """
     Main function to scrape Architectural Digest covers and featured articles and save them to a CSV file.
@@ -89,8 +119,36 @@ def main(csv_name="./data/architectural_digest_covers.csv"):
     Parameters:
     csv_name (str): The name of the CSV file to save the data to.
     """
-    df = pd.DataFrame(get_all_issues(1922, 2025))
+    
+    if not os.path.exists(csv_name) or os.path.getsize(csv_name) == 0:
+        #populate the data frame with the scraped data and save to a csv file
+        df = pd.DataFrame(get_all_issues(1922, 2025))
+        df.to_csv(csv_name, index=False)
+    else:
+        print(f"{csv_name} already exists and is not empty. Skipping scraping and loading data from the existing file.")
+    # Add a season column to the CSV file based on the month column if it doesn't already exist
+    df = pd.read_csv(csv_name)
+    if "season" not in df.columns:
+        df["season"] = df["month"].apply(get_season)
+        df.to_csv(csv_name, index=False)
+    
+    
+   
+
+    # Analyze the colors of the cover image from each row
+    #if "primary_color" not in df.columns:
+    for index, row in df.iterrows():
+        cover_image_url = row["cover_image_url"]
+        if cover_image_url:
+            print(f"Getting cover data from: {row['year']} {row['month']}")
+            color_analysis = ColorAnalysis(cover_image_url)
+            palette = color_analysis.get_palette()
+            df.at[index, "primary_color"] = ColorConversion.get_color_name(palette[0])
+            for i, secondary_colors in enumerate(palette[1:], start=1):
+                df.at[index, f"secondary_color_{i}"] = ColorConversion.get_color_name(secondary_colors)
     df.to_csv(csv_name, index=False)
+
+    
 
 
 
