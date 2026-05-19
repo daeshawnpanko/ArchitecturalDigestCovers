@@ -4,7 +4,10 @@ import os
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import numpy as np
-
+"""
+This probably shouldve been a notebook but oh well, maybe I'll change it to one later. \
+This script reads the CSV file of cover data, imports it into a SQLite database, and then creates bar plots of the primary colors of the covers over time, by season, and by decade.
+"""
 # Get the directory of the current script
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
