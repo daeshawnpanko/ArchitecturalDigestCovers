@@ -32,16 +32,3 @@ class ColorConversion:
         
         return closest_name
         
-    @staticmethod
-    def main():
-
-        # print("Testing ColorConversion functions:")
-        # #   TODO: DONT FUCKIN WORKS
-        # rgb_tuple = (255, 254, 80)
-        # print(ColorConversion.get_color_name(rgb_tuple))  # Should return a color name or the closest color name
-        for item in webcolors.names("css3"):
-            print(item)
-        
-
-if __name__ == "__main__":
-    ColorConversion.main()
