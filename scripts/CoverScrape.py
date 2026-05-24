@@ -143,11 +143,11 @@ def main(csv_name="./data/architectural_digest_covers.csv"):
         if cover_image_url:
             print(f"Getting cover data from: {row['year']} {row['month']}")
             color_analysis = ColorAnalysis(cover_image_url)
-            palette, _ = color_analysis.get_palette_NEW()
-            primary_color_name = ColorConversion.get_color_name(palette[0])
+            palette = color_analysis.get_palette_NEW()
+            primary_color_name = ColorConversion.get_color_name(palette[0][0])
             #df.at[index, "primary_color"] = primary_color_name
             for i, secondary_colors in enumerate(palette[1:], start=1):
-                color_name = ColorConversion.get_color_name(secondary_colors)
+                color_name = ColorConversion.get_color_name(secondary_colors[0])
                 # Check if this color already exists in secondary_color columns or is the primary color
                 color_exists = color_name == primary_color_name or any(df.at[index, f"secondary_color_{j}"] == color_name for j in range(1, i) if f"secondary_color_{j}" in df.columns)
                 df.at[index, f"secondary_color_{i}"] = "" if color_exists else color_name

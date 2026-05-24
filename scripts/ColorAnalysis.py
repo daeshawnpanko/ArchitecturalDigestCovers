@@ -55,5 +55,9 @@ class ColorAnalysis:
         counts = Counter(labels)
         total_pixels = len(labels)
         percentages = {i: counts[i]/total_pixels for i in range(num_colors)}
+        color_with_percentages = [(palette[i], percentages[i]) for i in range(num_colors)]
         
-        return palette, percentages
+        # Sort by highest percentage to lowest
+        color_with_percentages_sorted = sorted(color_with_percentages, key=lambda x: x[1], reverse=True)
+        
+        return color_with_percentages_sorted
