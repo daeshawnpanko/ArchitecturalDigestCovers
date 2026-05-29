@@ -6,6 +6,7 @@ from colorthief import ColorThief
 import matplotlib.pyplot as plt
 from ColorConversion import ColorConversion
 from ColorAnalysis import ColorAnalysis
+import json
 
 """This script scrapes the cover images and featured articles from Architectural Digest issues from 1922 through 2025."""
 
@@ -152,6 +153,7 @@ def main(csv_name="./data/architectural_digest_covers.csv"):
                 color_exists = color_name == primary_color_name or any(df.at[index, f"secondary_color_{j}"] == color_name for j in range(1, i) if f"secondary_color_{j}" in df.columns)
                 df.at[index, f"secondary_color_{i}"] = "" if color_exists else color_name
             df.at[index, "primary_color"] = primary_color_name
+            df.at[index, "color_palette_rgb"] = json.dumps({str(color[1]): color[0].tolist() for color in palette})
     df.to_csv(csv_name, index=False)
 
     
